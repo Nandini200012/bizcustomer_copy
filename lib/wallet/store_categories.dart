@@ -195,15 +195,21 @@ class _StoreCategoriesState extends State<StoreCategories> {
     return Scaffold(
         appBar: AppBar(
           leading: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Image.asset(
-              "assets/images/ic_back_img.png",
-              height: 37.h,
-              width: 37.w,
-            ),
-          ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 22.sp,
+              )
+
+              //  Image.asset(
+              //   "assets/images/ic_back_img.png",
+              //   height: 37.h,
+              //   width: 37.w,
+              // ),
+              ),
           elevation: 0.0,
           centerTitle: true,
           automaticallyImplyLeading: false,

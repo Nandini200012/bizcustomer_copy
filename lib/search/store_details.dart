@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reward_hub_customer/Utils/SharedPrefrence.dart';
 import 'package:reward_hub_customer/Utils/constants.dart';
@@ -430,6 +431,37 @@ class StoreDetailsState extends State<StoreDetails> {
       ],
     );
   }
+
+  // Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
+  //   final status = await Permission.phone.status;
+
+  //   if (status.isGranted) {
+  //     // Permission granted — proceed to call
+  //     try {
+  //       await PhoneDialer.makeCall(context, phoneNumber);
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Could not launch dialer: $e')),
+  //       );
+  //     }
+  //   } else {
+  //     // Request permission
+  //     final result = await Permission.phone.request();
+  //     if (result.isGranted) {
+  //       try {
+  //         await PhoneDialer.makeCall(context, phoneNumber);
+  //       } catch (e) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('Could not launch dialer: $e')),
+  //         );
+  //       }
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Phone call permission denied')),
+  //       );
+  //     }
+  //   }
+  // }
 
   Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
     await PhoneDialer.makeCall(context, phoneNumber);

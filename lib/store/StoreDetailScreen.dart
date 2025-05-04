@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:full_screen_image/full_screen_image.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reward_hub_customer/Utils/SharedPrefrence.dart';
 import 'package:reward_hub_customer/Utils/phone_dialer.dart';
@@ -62,34 +64,33 @@ class StoreDetailScreenState extends State<StoreDetailScreen> {
   }
 
   Widget profileImage() => FullScreenWidget(
-    disposeLevel: DisposeLevel.High,
-    child: Hero(
-      tag: "profile_image",
-      child: Consumer<UserData>(
-        builder: (context, userdata, _) {
-          String profilePhotoPath = SharedPrefrence().getUserProfilePhoto();
-          File profilePhotoFile = File(profilePhotoPath);
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child:
-                profilePhotoFile.existsSync()
+        disposeLevel: DisposeLevel.High,
+        child: Hero(
+          tag: "profile_image",
+          child: Consumer<UserData>(
+            builder: (context, userdata, _) {
+              String profilePhotoPath = SharedPrefrence().getUserProfilePhoto();
+              File profilePhotoFile = File(profilePhotoPath);
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: profilePhotoFile.existsSync()
                     ? Image.file(
-                      File(SharedPrefrence().getUserProfilePhoto()),
-                      height: 40,
-                      width: 40,
-                      fit: BoxFit.fill,
-                    )
+                        File(SharedPrefrence().getUserProfilePhoto()),
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.fill,
+                      )
                     : Image.asset(
-                      "assets/images/ic_profile.png",
-                      height: 40,
-                      width: 40,
-                      fit: BoxFit.cover,
-                    ),
-          );
-        },
-      ),
-    ),
-  );
+                        "assets/images/ic_profile.png",
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.cover,
+                      ),
+              );
+            },
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +216,7 @@ class StoreDetailScreenState extends State<StoreDetailScreen> {
               Icons.location_city,
               "Town:",
               storeList is StoreModel
-                  ? "${storeList.VendorTownName ?? ""}"
+                  ? "${storeList.townName ?? ""}"
                   : (storeList is filter.Vendor
                       ? '${storeList.vendorTownName ?? ""}'
                       : ''),
@@ -253,11 +254,12 @@ class StoreDetailScreenState extends State<StoreDetailScreen> {
                                 ""
                             : ''),
                   );
+                  log("mobile number: ${storeList.mobileNumber}");
                 },
-                icon: Icon(Icons.call, color: Colors.white),
+                icon: Center(child: Icon(Icons.call, color: Colors.white)),
                 label: Text(""),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.red,
                   shape: CircleBorder(),
                   padding: EdgeInsets.all(10),
                 ),
@@ -405,38 +407,35 @@ class StoreDetailScreenState extends State<StoreDetailScreen> {
                 autoPlayCurve: Curves.fastOutSlowIn,
                 viewportFraction: 1,
               ),
-              items:
-                  nonEmptyImageUrls
-                      .map(
-                        (item) => Container(
-                          child: CachedNetworkImage(
-                            imageUrl: item,
-                            imageBuilder:
-                                (context, imageProvider) => Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.fitHeight,
-                                      colorFilter: ColorFilter.mode(
-                                        Colors.black54.withOpacity(0.5),
-                                        BlendMode.lighten,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            placeholder:
-                                (context, url) => Center(
-                                  child: CupertinoActivityIndicator(
-                                    color: Colors.black,
-                                    radius: 16,
-                                  ),
-                                ),
+              items: nonEmptyImageUrls
+                  .map(
+                    (item) => Container(
+                      child: CachedNetworkImage(
+                        imageUrl: item,
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.fitHeight,
+                              colorFilter: ColorFilter.mode(
+                                Colors.black54.withOpacity(0.5),
+                                BlendMode.lighten,
+                              ),
+                            ),
                           ),
-                          margin: EdgeInsets.only(right: 0, left: 0),
                         ),
-                      )
-                      .toList(),
+                        placeholder: (context, url) => Center(
+                          child: CupertinoActivityIndicator(
+                            color: Colors.black,
+                            radius: 16,
+                          ),
+                        ),
+                      ),
+                      margin: EdgeInsets.only(right: 0, left: 0),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ),
@@ -446,5 +445,35 @@ class StoreDetailScreenState extends State<StoreDetailScreen> {
 }
 
 Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
-  await PhoneDialer.makeCall(context, phoneNumber);
+  final status = await Permission.phone.status;
+
+  if (status.isGranted) {
+    // Permission granted — proceed to call
+    try {
+      await PhoneDialer.makeCall(context, phoneNumber);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not launch dialer: $e')),
+      );
+    }
+  } else {
+    // Request permission
+    final result = await Permission.phone.request();
+    if (result.isGranted) {
+      try {
+        await PhoneDialer.makeCall(context, phoneNumber);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch dialer: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Phone call permission denied')),
+      );
+    }
+  }
 }
+// Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
+//   await PhoneDialer.makeCall(context, phoneNumber);
+// }
