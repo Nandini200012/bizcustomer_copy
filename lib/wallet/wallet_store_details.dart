@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,7 @@ class WalletStoreDetails extends StatefulWidget {
 class _WalletStoreDetailsState extends State<WalletStoreDetails> {
   List<String> imgList = [];
   List<String> tagList = [];
-
+  static const platform = MethodChannel('dialer.channel/call');
   @override
   void initState() {
     super.initState();
@@ -232,7 +233,8 @@ class _WalletStoreDetailsState extends State<WalletStoreDetails> {
                               ? widget.storeList.vendorRegisteredMobileNumber
                                       .toString() ??
                                   ""
-                              : ''));
+                              : ''),
+                      platform);
                 },
                 icon: Icon(
                   Icons.call,
@@ -433,32 +435,25 @@ class _WalletStoreDetailsState extends State<WalletStoreDetails> {
     );
   }
 
-  Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
-    final status = await Permission.phone.status;
+  Future<void> makePhoneCall(context, phoneNumber, platform) async {
+    if (phoneNumber.isEmpty) return;
 
-    if (status.isGranted) {
-      // Permission granted — proceed to call
+    if (Platform.isAndroid) {
       try {
-        await PhoneDialer.makeCall(context, phoneNumber);
-      } catch (e) {
+        await platform.invokeMethod('makeCall', {'number': phoneNumber});
+      } on PlatformException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not launch dialer: $e')),
+          SnackBar(content: Text("Failed to make call: ${e.message}")),
         );
       }
-    } else {
-      // Request permission
-      final result = await Permission.phone.request();
-      if (result.isGranted) {
-        try {
-          await PhoneDialer.makeCall(context, phoneNumber);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not launch dialer: $e')),
-          );
-        }
+    } else if (Platform.isIOS) {
+      final Uri telUri = Uri(scheme: 'tel', path: phoneNumber);
+
+      if (await canLaunchUrl(telUri)) {
+        await launchUrl(telUri, mode: LaunchMode.externalApplication);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Phone call permission denied')),
+          SnackBar(content: Text("Cannot launch dialer")),
         );
       }
     }

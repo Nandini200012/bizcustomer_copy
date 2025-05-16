@@ -1,6 +1,6 @@
 class Urls {
   //static const baseUrl = "http://143.110.181.12:7070/api/";
-  static const baseUrl = "https://sacrosys.net:6664/api/";
+  static const baseUrl = "https://sacrosys.net:6662/api/";
   static const baseUrl1 = "https://sacrosys.net:6664/api/";
 
   static const deviceInfoPostAPI = "${baseUrl}7263/postDeviceInfo";

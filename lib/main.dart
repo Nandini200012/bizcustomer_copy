@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
         create: (context) => UserData(),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-
           title: 'Bizatom',
           // home: SplashScreen(),
           home: SplashScreen(),

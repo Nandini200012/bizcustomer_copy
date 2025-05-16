@@ -8,9 +8,11 @@ import 'package:reward_hub_customer/login/api_service.dart';
 class CustomDialogBox extends StatefulWidget {
   final String title, descriptions, text;
   final String img;
+  final void Function(String val) onpressed;
 
   const CustomDialogBox(
       {Key? key,
+      required this.onpressed,
       required this.title,
       required this.descriptions,
       required this.text,
@@ -76,6 +78,13 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     keyboardType: TextInputType.number,
                     controller: dialogueMobileNumberControlller,
                     enabled: true,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value.length == 10) {
+                          widget.onpressed(value);
+                        }
+                      });
+                    },
                     decoration: const InputDecoration(
                         enabledBorder: OutlineInputBorder(
                           borderSide:

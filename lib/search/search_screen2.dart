@@ -179,6 +179,7 @@ class _SearchScreen2State extends State<SearchScreen2> {
                               },
                               child: ListTile(
                                 leading: CircleAvatar(
+                                    // ignore: sort_child_properties_last
                                     child: Text(
                                       place.placeName
                                           .substring(0, 1)
