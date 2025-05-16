@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print, unused_element, deprecated_member_use
+
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -12,9 +13,6 @@ import 'package:reward_hub_customer/search/AdvancedSearchFilterScreen.dart';
 import 'package:reward_hub_customer/store/StoreDetailScreen.dart';
 import 'package:reward_hub_customer/store/model/categories_m.dart';
 import 'package:reward_hub_customer/wallet/store_categories.dart';
-
-// import 'package:reward_hub_customer/store/model/store_model.dart';
-// import 'package:reward_hub_customer/store/model/vendor_model.dart';
 import '../Utils/toast_widget.dart';
 import '../Utils/urls.dart';
 import 'model/category_model.dart';
@@ -293,38 +291,6 @@ class StoreScreenState extends State<StoreScreen>
                           ),
                         ),
                       ),
-                      // const SizedBox(width: 0),
-                      // _tabController.index == 1
-                      //     ? InkWell(
-                      //         onTap: _navigateToAdvancedSearch,
-                      //         // onTap: () {
-                      //         //   showModalBottomSheet(
-                      //         //       isScrollControlled: true,
-                      //         //       context: context,
-                      //         //       MaterialPageRoute(
-                      //         //           builder: (context) =>
-                      //         //               AdvancedSearchFilterScreen())
-                      //         //       // builder: (BuildContext context) {
-                      //         //       //   return AdvancedSearchFilterScreen();
-                      //         //       //   // return BottomSheetContent(
-                      //         //       //   //     storesList: storesList);
-                      //         //       // },
-                      //         //       );
-                      //         // },
-                      //         child: Container(
-                      //           height: 52.h,
-                      //           width: 52.w,
-                      //           decoration: BoxDecoration(
-                      //               border:
-                      //                   Border.all(color: Constants().appColor),
-                      //               borderRadius: BorderRadius.circular(8)),
-                      //           child: Icon(
-                      //             Icons.filter_alt_outlined,
-                      //             size: 35.sp,
-                      //           ),
-                      //         ),
-                      //       )
-                      //     : const SizedBox()
                     ],
                   ),
                 ),
@@ -345,7 +311,6 @@ class StoreScreenState extends State<StoreScreen>
   }
 
   //Fahal
-
   void _navigateToAdvancedSearch() async {
     final result = await Navigator.push(
       context,
@@ -411,230 +376,698 @@ class StoreScreenState extends State<StoreScreen>
     }
   }
 
+  // Widget categoryList() {
+  //   return FutureBuilder<List<CategoriesM>>(
+  //       future: categoriesFuture,
+  //       builder: (context, snapshot) {
+  //         if (snapshot.connectionState == ConnectionState.waiting) {
+  //           return Center(
+  //             child:
+  //                 CircularProgressIndicator(), // Show a loading indicator while waiting
+  //           );
+  //         } else if (snapshot.hasError) {
+  //           return Center(
+  //             child: Text('Error: ${snapshot.error}'),
+  //           );
+  //         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+  //           return Center(
+  //             child: Text('No data available'),
+  //           );
+  //         } else {
+  //           final filteredCategories = snapshot.data!
+  //               .where((category) => category.vendorClassificationName
+  //                   .toLowerCase()
+  //                   .contains(_searchQuery.toLowerCase()))
+  //               .toList();
+  //           return GridView.builder(
+  //             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+  //               maxCrossAxisExtent: 200,
+  //               childAspectRatio: 3 / 2,
+  //               crossAxisSpacing: 2,
+  //               mainAxisSpacing: 2,
+  //             ),
+  //             itemCount: filteredCategories.length,
+  //             itemBuilder: (context, index) {
+  //               CategoriesM category = filteredCategories[index];
+  //               return GestureDetector(
+  //                 onTap: () {
+  //                   String selectedVendorClassificationId =
+  //                       category.vendorClassificationId.toString();
+  //                   Navigator.of(context).push(MaterialPageRoute(
+  //                       builder: (context) => StoreCategories(
+  //                             selectedVendorClassificationId:
+  //                                 selectedVendorClassificationId,
+  //                             fromCategories: true,
+  //                           )));
+  //                   // print("index id>>>${categoriesList[index].id}");
+  //                 },
+  //                 child: Container(
+  //                   decoration: BoxDecoration(
+  //                       borderRadius: BorderRadius.circular(10),
+  // image: DecorationImage(
+  //   image: category.vendorClassificationImageUrl != null
+  //       ? CachedNetworkImageProvider(
+  //           category.vendorClassificationImageUrl)
+  //       : AssetImage("assets/images/shadow.png")
+  //           as ImageProvider<Object>,
+  //                         fit: BoxFit.cover,
+  //                       )),
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.end,
+  //                     children: [
+  //                       Padding(
+  //                         padding: const EdgeInsets.all(8.0),
+  //                         child: Container(
+  //                           decoration: BoxDecoration(
+  //                             borderRadius: BorderRadius.circular(5),
+  //                             color: Colors.black.withOpacity(0.4),
+  //                           ),
+  //                           width: MediaQuery.of(context).size.width * .65,
+  //                           child: Text(
+  //                             category.vendorClassificationName,
+  //                             textAlign: TextAlign.center,
+  //                             style: TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontWeight: FontWeight.w500),
+  //                           ),
+  //                         ),
+  //                       )
+  //                     ],
+  //                   ),
+  //                 ),
+  //               );
+  //             },
+  //           );
+  //         }
+  //       });
+  // }
   Widget categoryList() {
     return FutureBuilder<List<CategoriesM>>(
         future: categoriesFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          // Loading state
+          // if (snapshot.connectionState == ConnectionState.waiting) {
+          //   return Center(
+          //     child: CircularProgressIndicator(
+          //       valueColor: AlwaysStoppedAnimation<Color>(Constants().appColor),
+          //       strokeWidth: 2.5,
+          //     ),
+          //   );
+          // }
+          // Error state
+          if (snapshot.hasError) {
             return Center(
-              child:
-                  CircularProgressIndicator(), // Show a loading indicator while waiting
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading categories',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Details: ${snapshot.error}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             );
-          } else if (snapshot.hasError) {
+          }
+          // Empty state
+          else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
-              child: Text('Error: ${snapshot.error}'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.category_outlined,
+                      size: 48, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No categories available',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
             );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Text('No data available'),
-            );
-          } else {
+          }
+          // Data loaded successfully
+          else {
             final filteredCategories = snapshot.data!
                 .where((category) => category.vendorClassificationName
                     .toLowerCase()
                     .contains(_searchQuery.toLowerCase()))
                 .toList();
+
+            // No results after filtering
+            if (filteredCategories.isEmpty && _searchQuery.isNotEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No matching categories',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Try different search terms',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
             return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                childAspectRatio: 3 / 2,
-                crossAxisSpacing: 2,
-                mainAxisSpacing: 2,
+              padding: const EdgeInsets.all(12),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.8,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 16,
               ),
               itemCount: filteredCategories.length,
               itemBuilder: (context, index) {
                 CategoriesM category = filteredCategories[index];
-                return GestureDetector(
-                  onTap: () {
-                    String selectedVendorClassificationId =
-                        category.vendorClassificationId.toString();
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => StoreCategories(
-                              selectedVendorClassificationId:
-                                  selectedVendorClassificationId,
-                              fromCategories: true,
-                            )));
-                    // print("index id>>>${categoriesList[index].id}");
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                          image: category.vendorClassificationImageUrl != null
-                              ? CachedNetworkImageProvider(
-                                  category.vendorClassificationImageUrl)
-                              : AssetImage("assets/images/shadow.png")
-                                  as ImageProvider<Object>,
-                          fit: BoxFit.cover,
-                        )),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.black.withOpacity(0.4),
-                            ),
-                            width: MediaQuery.of(context).size.width * .65,
-                            child: Text(
-                              category.vendorClassificationName,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
+                return _buildCategoryCard(context, category);
               },
             );
           }
         });
   }
 
-  Widget storeList() {
-    List<filter.Vendor> filteredVendors = filterVendorModel.data ?? [];
-    if (_searchQuery.isNotEmpty && filteredVendors.isEmpty) {
-      return Center(
-        child: Text('Tap to search'),
-      );
-    }
-    return GridView.builder(
-      controller: _scrollController,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 2,
-        mainAxisSpacing: 2,
-      ),
-      itemCount: _searchQuery.isNotEmpty
-          ? filteredVendors.length ?? 0
-          : storesList.length,
-      itemBuilder: (BuildContext ctx, index) {
-        return GestureDetector(
-          onTap: () {
-            if (mounted) {
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.rightToLeft,
-                  child: StoreDetailScreen(_searchQuery.isEmpty
-                      ? storesList[index]
-                      : filteredVendors[index]),
-                ),
-              );
-            }
-          },
-          child: _searchQuery.isEmpty
-              ? Container(
-                  margin: const EdgeInsets.only(left: 2, right: 2),
-                  height: 50,
-                  width: 122,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: storesList[index].imageURL1 == "null"
-                        ? const DecorationImage(
-                            image: AssetImage("assets/images/store.jpg"),
-                            fit: BoxFit.fill,
-                          )
-                        : DecorationImage(
-                            image: CachedNetworkImageProvider(
-                                storesList[index].imageURL1),
-                            fit: BoxFit.fill,
-                          ),
-                  ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Positioned.fill(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: const DecorationImage(
-                              image: AssetImage("assets/images/shadow.png"),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Text(
-                            storesList[index].name,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : Container(
-                  margin: const EdgeInsets.only(left: 2, right: 2),
-                  height: 50,
-                  width: 122,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: filteredVendors[index].vendorBusinessPicUrl1 ==
-                            "null"
-                        ? const DecorationImage(
-                            image:
-                                AssetImage("assets/images/ic_sample_image.png"),
-                            fit: BoxFit.fill,
-                          )
-                        : DecorationImage(
-                            image: NetworkImage(
-                                filteredVendors[index].vendorBusinessPicUrl1),
-                            fit: BoxFit.fill,
-                          ),
-                  ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Positioned.fill(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: const DecorationImage(
-                              image: AssetImage("assets/images/shadow.png"),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Text(
-                            filteredVendors[index].vendorBusinessName,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+  Widget _buildCategoryCard(BuildContext context, CategoriesM category) {
+    return GestureDetector(
+      onTap: () {
+        String selectedVendorClassificationId =
+            category.vendorClassificationId.toString();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => StoreCategories(
+              selectedVendorClassificationId: selectedVendorClassificationId,
+              fromCategories: true,
+            ),
+          ),
         );
       },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Category image
+              CachedNetworkImage(
+                imageUrl: category.vendorClassificationImageUrl ?? "",
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey[200],
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Constants().appColor),
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Image.asset(
+                  "assets/images/shadow.png",
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              // Gradient overlay
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                    stops: const [0.6, 1.0],
+                  ),
+                ),
+              ),
+
+              // Category name
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      color: Colors.black.withOpacity(0.3),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    child: Text(
+                      category.vendorClassificationName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
+
+  Widget storeList() {
+    // Get filtered vendors for search results
+    List<filter.Vendor> filteredVendors = filterVendorModel.data ?? [];
+
+    // Handle empty search results case
+    if (_searchQuery.isNotEmpty && filteredVendors.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'No results found',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try different keywords or filters',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return NotificationListener<ScrollNotification>(
+      // Trigger loading more items when reaching 80% of the scroll extent
+      onNotification: (ScrollNotification scrollInfo) {
+        if (scrollInfo.metrics.pixels >
+            scrollInfo.metrics.maxScrollExtent * 0.8) {
+          if (_searchQuery.isNotEmpty) {
+            _loadfilterMoreItems();
+          } else {
+            _loadMoreItems();
+          }
+        }
+        return false;
+      },
+      child: GridView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(12),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.8,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: (_searchQuery.isNotEmpty
+                ? filteredVendors.length
+                : storesList.length) +
+            1,
+        itemBuilder: (BuildContext ctx, index) {
+          // Loading indicator at the end of the list
+          if (index ==
+              (_searchQuery.isNotEmpty
+                  ? filteredVendors.length
+                  : storesList.length)) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(Constants().appColor),
+                ),
+              ),
+            );
+          }
+
+          // Store data based on search state
+          final bool isSearchMode = _searchQuery.isNotEmpty;
+          final String storeName = isSearchMode
+              ? filteredVendors[index].vendorBusinessName
+              : storesList[index].name;
+          final String imageUrl = isSearchMode
+              ? filteredVendors[index].vendorBusinessPicUrl1
+              : storesList[index].imageURL1;
+          final String defaultImage = isSearchMode
+              ? "assets/images/ic_sample_image.png"
+              : "assets/images/store.jpg";
+          final bool hasValidImage = imageUrl != "null" && imageUrl.isNotEmpty;
+
+          // Determine the category name to display
+          final String categoryName = isSearchMode
+              ? (filteredVendors[index].vendorClassificationName ?? "Store")
+              : storesList[index].classificationName;
+
+          return _buildStoreCard(
+            ctx,
+            index,
+            storeName,
+            imageUrl,
+            defaultImage,
+            hasValidImage,
+            isSearchMode,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStoreCard(
+    BuildContext context,
+    int index,
+    String storeName,
+    String imageUrl,
+    String defaultImage,
+    bool hasValidImage,
+    bool isSearchMode,
+  ) {
+    // Get the correct vendor/store object for category name
+    final String categoryName = isSearchMode
+        ? (filterVendorModel.data != null &&
+                filterVendorModel.data!.length > index
+            ? filterVendorModel.data![index].vendorClassificationName ?? "Store"
+            : "Store")
+        : (storesList.length > index
+            ? storesList[index].classificationName
+            : "Store");
+
+    return GestureDetector(
+      onTap: () {
+        if (mounted) {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: StoreDetailScreen(isSearchMode
+                  ? filterVendorModel.data![index]
+                  : storesList[index]),
+            ),
+          );
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Store image
+              hasValidImage
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Image.asset(
+                        defaultImage,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Image.asset(
+                      defaultImage,
+                      fit: BoxFit.cover,
+                    ),
+
+              // Gradient overlay for text visibility
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                    stops: const [0.6, 1.0],
+                  ),
+                ),
+              ),
+
+              // Store info
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        storeName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.shopping_bag_outlined,
+                            color: Colors.white.withOpacity(0.8),
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              categoryName,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget storeList() {
+  //   List<filter.Vendor> filteredVendors = filterVendorModel.data ?? [];
+  //   if (_searchQuery.isNotEmpty && filteredVendors.isEmpty) {
+  //     return Center(
+  //       child: Text('Tap to search'),
+  //     );
+  //   }
+  //   return GridView.builder(
+  //     controller: _scrollController,
+  //     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+  //       maxCrossAxisExtent: 200,
+  //       childAspectRatio: 3 / 2,
+  //       crossAxisSpacing: 2,
+  //       mainAxisSpacing: 2,
+  //     ),
+  //     itemCount: _searchQuery.isNotEmpty
+  //         ? filteredVendors.length ?? 0
+  //         : storesList.length,
+  //     itemBuilder: (BuildContext ctx, index) {
+  //       return GestureDetector(
+  //         onTap: () {
+  //           if (mounted) {
+  //             Navigator.push(
+  //               context,
+  //               PageTransition(
+  //                 type: PageTransitionType.rightToLeft,
+  //                 child: StoreDetailScreen(_searchQuery.isEmpty
+  //                     ? storesList[index]
+  //                     : filteredVendors[index]),
+  //               ),
+  //             );
+  //           }
+  //         },
+  //         child: _searchQuery.isEmpty
+  //             ? Container(
+  //                 margin: const EdgeInsets.only(left: 2, right: 2),
+  //                 height: 50,
+  //                 width: 122,
+  //                 decoration: BoxDecoration(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                   image: storesList[index].imageURL1 == "null"
+  //                       ? const DecorationImage(
+  //                           image: AssetImage("assets/images/store.jpg"),
+  //                           fit: BoxFit.fill,
+  //                         )
+  //                       : DecorationImage(
+  //                           image: CachedNetworkImageProvider(
+  //                               storesList[index].imageURL1),
+  //                           fit: BoxFit.fill,
+  //                         ),
+  //                 ),
+  //                 child: Stack(
+  //                   fit: StackFit.expand,
+  //                   children: [
+  //                     Positioned.fill(
+  //                       child: DecoratedBox(
+  //                         decoration: BoxDecoration(
+  //                           borderRadius: BorderRadius.circular(10),
+  //                           image: const DecorationImage(
+  //                             image: AssetImage("assets/images/shadow.png"),
+  //                             fit: BoxFit.fill,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     Padding(
+  //                       padding: const EdgeInsets.only(bottom: 10),
+  //                       child: Align(
+  //                         alignment: Alignment.bottomCenter,
+  //                         child: Text(
+  //                           storesList[index].name,
+  //                           style: const TextStyle(
+  //                             fontSize: 12,
+  //                             color: Colors.white,
+  //                             fontWeight: FontWeight.bold,
+  //                           ),
+  //                           textAlign: TextAlign.center,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               )
+  //             : Container(
+  //                 margin: const EdgeInsets.only(left: 2, right: 2),
+  //                 height: 50,
+  //                 width: 122,
+  //                 decoration: BoxDecoration(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                   image: filteredVendors[index].vendorBusinessPicUrl1 ==
+  //                           "null"
+  //                       ? const DecorationImage(
+  //                           image:
+  //                               AssetImage("assets/images/ic_sample_image.png"),
+  //                           fit: BoxFit.fill,
+  //                         )
+  //                       : DecorationImage(
+  //                           image: NetworkImage(
+  //                               filteredVendors[index].vendorBusinessPicUrl1),
+  //                           fit: BoxFit.fill,
+  //                         ),
+  //                 ),
+  //                 child: Stack(
+  //                   fit: StackFit.expand,
+  //                   children: [
+  //                     Positioned.fill(
+  //                       child: DecoratedBox(
+  //                         decoration: BoxDecoration(
+  //                           borderRadius: BorderRadius.circular(10),
+  //                           image: const DecorationImage(
+  //                             image: AssetImage("assets/images/shadow.png"),
+  //                             fit: BoxFit.fill,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     Padding(
+  //                       padding: const EdgeInsets.only(bottom: 10),
+  //                       child: Align(
+  //                         alignment: Alignment.bottomCenter,
+  //                         child: Text(
+  //                           filteredVendors[index].vendorBusinessName,
+  //                           style: const TextStyle(
+  //                             fontSize: 12,
+  //                             color: Colors.white,
+  //                             fontWeight: FontWeight.bold,
+  //                           ),
+  //                           textAlign: TextAlign.center,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<http.Response> getStoreList(BuildContext context,
       {bool reset = false, int pageNo = 1, int pageCount = 20}) async {

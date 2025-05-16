@@ -513,10 +513,10 @@ import 'package:reward_hub_customer/store/store_screen.dart';
 class StroreFilterStoreDetails extends StatefulWidget {
   final String placeId;
 
-
-  StroreFilterStoreDetails(
-      {Key? key, required this.placeId, })
-      : super(key: key);
+  StroreFilterStoreDetails({
+    Key? key,
+    required this.placeId,
+  }) : super(key: key);
 
   @override
   State<StroreFilterStoreDetails> createState() =>
@@ -815,9 +815,7 @@ class _StroreFilterStoreDetailsState extends State<StroreFilterStoreDetails> {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
-         
-              Navigator.pop(context);
-          
+            Navigator.pop(context);
           },
           child: Image.asset(
             "assets/images/ic_back_img.png",
@@ -830,7 +828,7 @@ class _StroreFilterStoreDetailsState extends State<StroreFilterStoreDetails> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: Text(
-          'Store List',
+          'Store Lis',
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 20.sp,

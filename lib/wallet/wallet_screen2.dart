@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -488,7 +485,7 @@ class _WalletScreen2State extends State<WalletScreen2>
                                   // Adjust this value as needed to position "Fahal Salam"
                                   bottom: 24.0.h,
                                   child: Text(
-                                    "Eligibility for\nclaim : ${formattedAmount} ",
+                                    'Eligibility for\nclaim :${((double.parse(balance) * 0.8).toStringAsFixed(2))}',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 8.sp,
@@ -718,11 +715,22 @@ class _WalletScreen2State extends State<WalletScreen2>
                             },
                           ),
                         ),
-                        Text("Recent Transactions",
-                            style: TextStyle(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w700,
-                            )),
+                        Row(
+                          children: [
+                            Text("Recent Transactions",
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w700,
+                                )),
+                            Spacer(),
+                            Text("More",
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w700,
+                                )),
+                          ],
+                        ),
                         SizedBox(height: 10.h),
                         Expanded(
                           child: Theme(

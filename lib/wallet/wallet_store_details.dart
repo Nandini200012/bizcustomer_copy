@@ -4,7 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reward_hub_customer/Utils/SharedPrefrence.dart';
 import 'package:reward_hub_customer/Utils/constants.dart';
@@ -29,7 +31,7 @@ class WalletStoreDetails extends StatefulWidget {
 class _WalletStoreDetailsState extends State<WalletStoreDetails> {
   List<String> imgList = [];
   List<String> tagList = [];
-
+  static const platform = MethodChannel('dialer.channel/call');
   @override
   void initState() {
     super.initState();
@@ -190,7 +192,7 @@ class _WalletStoreDetailsState extends State<WalletStoreDetails> {
                 widget.storeList is Vendor
                     ? "${widget.storeList.vendorPlaceName ?? ""}"
                     : (widget.storeList is filter.Vendor
-                        ? '${widget.storeList.vendorBranchName ?? ""}'
+                        ? '${widget.storeList.vendorPlaceName ?? ""}'
                         : '')),
             _buildInfoRow(
                 Icons.location_city,
@@ -198,7 +200,7 @@ class _WalletStoreDetailsState extends State<WalletStoreDetails> {
                 widget.storeList is Vendor
                     ? "${widget.storeList.vendorTownName ?? ""}"
                     : (widget.storeList is filter.Vendor
-                        ? '${widget.storeList.vendorAddressL1 ?? ""}'
+                        ? '${widget.storeList.vendorTownName ?? ""}'
                         : '')),
             _buildInfoRow(
                 Icons.map,
@@ -206,7 +208,7 @@ class _WalletStoreDetailsState extends State<WalletStoreDetails> {
                 widget.storeList is Vendor
                     ? "${widget.storeList.vendorDistrictName ?? ""}"
                     : (widget.storeList is filter.Vendor
-                        ? '${widget.storeList.vendorBranchName ?? ""}'
+                        ? '${widget.storeList.vendorDistrictName ?? ""}'
                         : '')),
             _buildInfoRow(
                 Icons.pin_drop,
@@ -231,7 +233,8 @@ class _WalletStoreDetailsState extends State<WalletStoreDetails> {
                               ? widget.storeList.vendorRegisteredMobileNumber
                                       .toString() ??
                                   ""
-                              : ''));
+                              : ''),
+                      platform);
                 },
                 icon: Icon(
                   Icons.call,
@@ -432,7 +435,30 @@ class _WalletStoreDetailsState extends State<WalletStoreDetails> {
     );
   }
 
-  Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
-    await PhoneDialer.makeCall(context, phoneNumber);
+  Future<void> makePhoneCall(context, phoneNumber, platform) async {
+    if (phoneNumber.isEmpty) return;
+
+    if (Platform.isAndroid) {
+      try {
+        await platform.invokeMethod('makeCall', {'number': phoneNumber});
+      } on PlatformException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to make call: ${e.message}")),
+        );
+      }
+    } else if (Platform.isIOS) {
+      final Uri telUri = Uri(scheme: 'tel', path: phoneNumber);
+
+      if (await canLaunchUrl(telUri)) {
+        await launchUrl(telUri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Cannot launch dialer")),
+        );
+      }
+    }
   }
+  // Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
+  //   await PhoneDialer.makeCall(context, phoneNumber);
+  // }
 }

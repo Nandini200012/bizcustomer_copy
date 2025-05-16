@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
@@ -7,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:reward_hub_customer/Utils/constants.dart';
 import 'package:reward_hub_customer/provider/user_data_provider.dart';
 import 'package:reward_hub_customer/splash/splash_screen.dart';
-import 'package:reward_hub_customer/wallet/wallet_screen2.dart';
 
 @pragma('vm:entry-point')
 void main() async {
@@ -28,7 +26,6 @@ class MyApp extends StatelessWidget {
         create: (context) => UserData(),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-
           title: 'Bizatom',
           // home: SplashScreen(),
           home: SplashScreen(),

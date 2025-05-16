@@ -386,10 +386,8 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<List> customerAlreadyExistedCheckForLogin(
-    String mobileNumber,
-    context,
-  ) async {
+  Future<List> customerAlreadyExistedCheckForLogin(String mobileNumber, context,
+      {bool showdialog = true}) async {
     final String apiUrl = Urls.login;
 
     final Map<String, String> headers = {
@@ -414,7 +412,9 @@ class LoginScreenState extends State<LoginScreen> {
         }
         return users;
       } else {
-        if (response.statusCode == 404 && mobileNumber.length >= 10) {
+        if (response.statusCode == 404 &&
+            mobileNumber.length >= 10 &&
+            showdialog) {
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -484,14 +484,165 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> fetchDataAsync() async {
+  void showTopSnackBar(BuildContext context, String message) {
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 10,
+        left: 20,
+        right: 20,
+        child: Material(
+          elevation: 10,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.red,
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3))
+        .then((_) => overlayEntry.remove());
+  }
+
+  Future<void> fetchDataAsync2({String? phone}) async {
+    phone ??= mobileNumberControlller.text;
     try {
       EasyLoading.show(
         dismissOnTap: false,
         maskType: EasyLoadingMaskType.black,
       );
       List customerData = await customerAlreadyExistedCheckForLogin(
-          mobileNumberControlller.text, context);
+          phone, context,
+          showdialog: false);
+
+      if (customerData.isNotEmpty) {
+        String verificationStatus = customerData[0].verificationStatus;
+        if (mobileNumberFocused.hasFocus) {
+          if (verificationStatus == "NEW ACTIVATION") {
+            showModalBottomSheet(
+              context: context,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(25.0),
+                ),
+              ),
+              builder: (BuildContext context) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 16.h),
+                      Image.asset(
+                        "assets/images/ic_logo.png",
+                        height: 91.h,
+                        width: 201.w,
+                      ),
+                      SizedBox(height: 30.h),
+                      Text(
+                        "The phone number is not registered.",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.sp,
+                        ),
+                      ),
+                      SizedBox(height: 18.h),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Do you want to proceed with new registration?",
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              minimumSize: Size(100.w, 50.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.r),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                              SharedPrefrence().setActivated(true);
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: RegisterScreen(
+                                    mobileNumber: mobileNumberControlller.text,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "Register",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              minimumSize: Size(100.w, 50.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.r),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              mobileNumberControlller.clear();
+                            },
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20.h),
+                    ],
+                  ),
+                );
+              },
+            );
+          } else if (verificationStatus == "INVALID CARD") {
+            showTopSnackBar(context, "INVALID CARD");
+            // showCustomBottomSheet(context);
+          } else if (verificationStatus == "ACTIVE CUSTOMER") {
+            SharedPrefrence().setPassword(customerData[0].customerSecret);
+          }
+        }
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      showTopSnackBar(context, "INVALID CARD");
+      // EasyLoading.dismiss();
+    }
+  }
+
+  Future<void> fetchDataAsync({String? phone}) async {
+    phone ??= mobileNumberControlller.text;
+    try {
+      EasyLoading.show(
+        dismissOnTap: false,
+        maskType: EasyLoadingMaskType.black,
+      );
+      List customerData =
+          await customerAlreadyExistedCheckForLogin(phone, context);
 
       if (customerData.isNotEmpty) {
         String verificationStatus = customerData[0].verificationStatus;
@@ -844,6 +995,11 @@ class LoginScreenState extends State<LoginScreen> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           return CustomDialogBox(
+                                            onpressed: (val) {
+                                              // setState(() {
+                                              fetchDataAsync2(phone: val);
+                                              // });
+                                            },
                                             title: "Custom Dialog Demo",
                                             descriptions:
                                                 "Hii all this is a custom dialog in flutter and  you will be use in your flutter applications",
